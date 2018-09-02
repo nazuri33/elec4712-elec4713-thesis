@@ -1,1 +1,1 @@
-
+Note that the .jar file in here is my recompiled version, which includes SORNNeuronRule and AddSTDPRule classes, as well as modified RegisteredSimulation and additional sorn_abridging custom simulation (as of 2/9/2018). Although these features are quite stable, and all other features of the program are 100% stable, for official version please visit: http://www.simbrain.net/Downloads/downloads_main.html
