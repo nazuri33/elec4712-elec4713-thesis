@@ -1,0 +1,61 @@
+<org.simbrain.network.core.Network>
+  <neuronList/>
+  <synapseList class="linked-hash-set"/>
+  <groupList/>
+  <textList>
+    <org.simbrain.network.core.NetworkTextObject>
+      <parent reference="../../.."/>
+      <x>-343.2095670813435</x>
+      <y>-193.55248864189952</y>
+      <text>Velocity experiment (2016)
+Slow = 7.5 cm/s, Medium = 15 cm/s, Fast = 30 cm/s
+ab = de = 3.6 cm, bd = 12 cm, ae = 19.2 cm
+Distance between brushes set to achieve 100ms traverse time over occluder 
+(therefore, it was different for each velocity)
+</text>
+      <fontName>Yu Gothic UI Semilight</fontName>
+      <fontSize>12</fontSize>
+      <italic>true</italic>
+      <bold>false</bold>
+    </org.simbrain.network.core.NetworkTextObject>
+    <org.simbrain.network.core.NetworkTextObject>
+      <parent reference="../../.."/>
+      <x>403.73207867187216</x>
+      <y>-130.5175176492147</y>
+      <text></text>
+      <fontName>Helvetica</fontName>
+      <fontSize>12</fontSize>
+      <italic>false</italic>
+      <bold>false</bold>
+    </org.simbrain.network.core.NetworkTextObject>
+  </textList>
+  <updateManager>
+    <actionList>
+      <org.simbrain.network.update__actions.BufferedUpdate>
+        <network reference="../../../.."/>
+      </org.simbrain.network.update__actions.BufferedUpdate>
+    </actionList>
+    <network reference="../.."/>
+  </updateManager>
+  <time>0.0</time>
+  <timeStep>0.1</timeStep>
+  <timeType>DISCRETE</timeType>
+  <prioritySortedNeuronList/>
+  <priorityComparator>
+    <outer-class reference="../.."/>
+  </priorityComparator>
+  <neuronIdGenerator>
+    <rootName>Neuron</rootName>
+    <index>1</index>
+  </neuronIdGenerator>
+  <synapseIdGenerator>
+    <rootName>Synapse</rootName>
+    <index>1</index>
+  </synapseIdGenerator>
+  <groupIdGenerator>
+    <rootName>Group</rootName>
+    <index>1</index>
+  </groupIdGenerator>
+  <fireUpdates>true</fireUpdates>
+  <name>Network1</name>
+</org.simbrain.network.core.Network>
