@@ -1,0 +1,1 @@
+All workspace zip files. These should be opened directly in Simbrain.jar (3.03), available for free download (http://www.simbrain.net/Downloads/downloads_main.html) on a machine with Java 1.8 installed. Note that these workspaces were created on a Windows 7, 64-bit machine, with Java version 1.8.0_181 and Java SE Runtime environment (build 1.8.0_181-b13). 
