@@ -1,4 +1,4 @@
-Custom simulations for integration into Simbrain.jar source code. Refer to the notes below for the compilation process involved. Note that all paths referenced are in reference to my local machine. 
+Custom simulations for integration into Simbrain.jar source code. Refer to the notes below for the compilation process involved. Note that all paths referenced are in reference to my local machine and these instructions are for personal reference.
 
 1. All modifications to the stimulus input workspace need to be made to the file SORNModWithAbridgingSimplified.zip in 
    E:/Setups/Simbrain 3.03/scripts/scriptmenu so that the current openWorkspace call in my SORNAbridging.java custom class works.
