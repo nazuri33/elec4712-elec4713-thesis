@@ -247,7 +247,7 @@ for i = 1:length(subjects)
     incolnorm = normCol(incolumn); 
     targcolnorm = normCol(targcolumn); 
     for j = 1:size(incolumn,1)
-        inOut(j,2:3) = double_long; 
+        inOut(j,2:3) = double_short; 
         inOut(j,1) = incolnorm(j);
         targOut(j,1) = targcolnorm(j);  
     end

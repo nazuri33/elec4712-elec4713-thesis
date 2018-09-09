@@ -194,6 +194,8 @@ for i = 1:length(subjects)
 end
 
 %% Construct data set 4: concatenate cross-training sets by subject
+clc;
+clear; 
 subjects = {'sonya', 'annie', 'fahed', 'hamid', 'julian', 'nastaran', 'norfizah', 'paja', 'rachel', 'sarah'}; 
 long = '_long_';
 short = '_short_';
@@ -201,8 +203,8 @@ for i = 1:length(subjects)
     all_input_csv = []; 
     all_target_csv = []; 
     for j = 1:22
-       training_input_file_names{j} = strcat(subjects{i}, short, 'testingINPUT_', int2str(j), '.csv');
-       training_target_file_names{j} = strcat(subjects{i}, short, 'testingTARGET_', int2str(j), '.csv');
+       training_input_file_names{j} = strcat(subjects{i}, short, 'validationINPUT_', int2str(j), '.csv');
+       training_target_file_names{j} = strcat(subjects{i}, short, 'validationTARGET_', int2str(j), '.csv');
 %        training_input_file_names(j) = strcat(subjects{j}, long, 'validaINPUT_', int2str(j), '.csv');
        input_var_names{j} = strcat('testing_input_csv_', int2str(j)); 
        target_var_names{j} = strcat('testing_target_csv_', int2str(j)); 
@@ -211,8 +213,8 @@ for i = 1:length(subjects)
        all_input_csv =  [all_input_csv; eval(input_var_names{j})];
        all_target_csv = [all_target_csv; eval(target_var_names{j})];
     end
-    training_input_dataset_name = strcat(subjects{i}, short, 'double_testing_input_data.csv'); 
-    training_target_dataset_name = strcat(subjects{i}, short, 'double_testing_target_data.csv'); 
+    training_input_dataset_name = strcat(subjects{i}, short, 'double_validation_input_data.csv'); 
+    training_target_dataset_name = strcat(subjects{i}, short, 'double_validation_target_data.csv'); 
     writetable(array2table(all_input_csv), training_input_dataset_name);
     writetable(array2table(all_target_csv), training_target_dataset_name);
 
@@ -236,8 +238,8 @@ validation = 'double_validation_';
 inputtag = 'input_data.csv';
 targettag = 'target_data.csv'; 
 for i = 1:length(subjects)
-    inFileName = strcat(subjects{i}, long, training, inputtag);
-    targFileName = strcat(subjects{i}, long, training, targettag);
+    inFileName = strcat(subjects{i}, short, training, inputtag);
+    targFileName = strcat(subjects{i}, short, training, targettag);
     in = csvread(inFileName, 1, 0);
     targ = csvread(targFileName, 1, 0);
     incolumn = in(:,1);
@@ -245,7 +247,7 @@ for i = 1:length(subjects)
     incolnorm = normCol(incolumn); 
     targcolnorm = normCol(targcolumn); 
     for j = 1:size(incolumn,1)
-        inOut(j,2:3) = double_long; 
+        inOut(j,2:3) = double_short; 
         inOut(j,1) = incolnorm(j);
         targOut(j,1) = targcolnorm(j);  
     end
