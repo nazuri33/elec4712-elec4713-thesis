@@ -118,68 +118,70 @@ for x = 1:length(subjects)
 end 
 
 %% Construct data set 3: cross-validation
+clear;
+clc; 
 wrapN = @(x, N) (1 + mod(x-1,N));
 subjects = {'sonya', 'annie', 'fahed', 'hamid', 'julian', 'nastaran', 'norfizah', 'paja', 'rachel', 'sarah'}; 
 short = '_short_';
 long = '_long_';
 for i = 1:length(subjects)
-    inputcsvname_long = strcat(subjects{i}, long, 'inputdataset.csv'); 
-    targetcsvname_long = strcat(subjects{i}, long, 'targetdataset.csv'); 
-    input_long = csvread(inputcsvname_long,1,0);
-    target_long = csvread(targetcsvname_long,1,0); 
+    inputcsvname_short = strcat(subjects{i}, short, 'inputdataset.csv'); 
+    targetcsvname_short = strcat(subjects{i}, short, 'targetdataset.csv'); 
+    input_short = csvread(inputcsvname_short,1,0);
+    target_short = csvread(targetcsvname_short,1,0); 
     % 70% for training, 20% for validation, 10% for testing (cycle)
     % say we have 20 cross-validations; we should shift sets by ~100 w/each
-    data_length = length(input_long); 
+    data_length = length(input_short); 
     training_length = floor(data_length*0.7);
     validation_length = floor(data_length*0.2);
     testing_length = floor(data_length*0.1); 
-    for j = 1:5
+    for j = 1:22
         training_start = round(wrapN(j*100 - 99, data_length)); 
         validation_start = round(wrapN(training_start + 0.7*data_length, data_length)); 
         testing_start = round(wrapN(training_start + 0.9*data_length, data_length)); 
-        disp('training start: ');
-        disp(training_start);
-        disp('testing start: ');
-        disp(testing_start);
-        disp('validation start: ');
-        disp(validation_start); 
+%         disp('training start: ');
+%         disp(training_start);
+%         disp('testing start: ');
+%         disp(testing_start);
+%         disp('validation start: ');
+%         disp(validation_start); 
         for k = 1:training_length
             if (k+training_start > data_length)
-                current_training_input_set(k,:) = input_long(wrapN(k+training_start,data_length),:); 
-                current_training_target_set(k,1) = target_long(wrapN(k+training_start,data_length)); 
+                current_training_input_set(k,:) = input_short(wrapN(k+training_start,data_length),:); 
+                current_training_target_set(k,1) = target_short(wrapN(k+training_start,data_length)); 
             else
-                current_training_input_set(k,:) = input_long(training_start+k,:); 
-                current_training_target_set(k,1) = target_long(training_start+k); 
+                current_training_input_set(k,:) = input_short(training_start+k,:); 
+                current_training_target_set(k,1) = target_short(training_start+k); 
             end 
         end
         
         for l = 1:validation_length
            if (l+validation_start > data_length)
-               current_validation_input_set(l,:) = input_long(wrapN(l+validation_start,data_length),:); 
-               current_validation_target_set(l,1) = target_long(wrapN(l+validation_start,data_length));
+               current_validation_input_set(l,:) = input_short(wrapN(l+validation_start,data_length),:); 
+               current_validation_target_set(l,1) = target_short(wrapN(l+validation_start,data_length));
            else
-               current_validation_input_set(l,:) = input_long(validation_start+l,:);
-               current_validation_target_set(l,1) = target_long(validation_start+l); 
+               current_validation_input_set(l,:) = input_short(validation_start+l,:);
+               current_validation_target_set(l,1) = target_short(validation_start+l); 
         
            end
         end 
         
         for m = 1:testing_length
            if (m+testing_start > data_length)
-               current_testing_input_set(m,:) = input_long(wrapN(m+testing_start, data_length),:); 
-               current_testing_target_set(m,1) = target_long(wrapN(m+testing_start, data_length));
+               current_testing_input_set(m,:) = input_short(wrapN(m+testing_start, data_length),:); 
+               current_testing_target_set(m,1) = target_short(wrapN(m+testing_start, data_length));
            else
-               current_testing_input_set(m,:) = input_long(testing_start+m,:);
-               current_testing_target_set(m,1) = target_long(testing_start+m); 
+               current_testing_input_set(m,:) = input_short(testing_start+m,:);
+               current_testing_target_set(m,1) = target_short(testing_start+m); 
            end 
         end
         
-        training_input_filename = strcat(subjects{i}, long, 'trainingINPUT_', int2str(j), '.csv'); 
-        training_target_filename = strcat(subjects{i}, long, 'trainingTARGET_', int2str(j), '.csv'); 
-        testing_input_filename = strcat(subjects{i}, long, 'testingINPUT_', int2str(j), '.csv'); 
-        testing_target_filename = strcat(subjects{i}, long, 'testingTARGET_', int2str(j), '.csv'); 
-        validation_input_filename = strcat(subjects{i}, long, 'validationINPUT_', int2str(j), '.csv'); 
-        validation_target_filename = strcat(subjects{i}, long, 'validationTARGET_', int2str(j), '.csv'); 
+        training_input_filename = strcat(subjects{i}, short, 'trainingINPUT_', int2str(j), '.csv'); 
+        training_target_filename = strcat(subjects{i}, short, 'trainingTARGET_', int2str(j), '.csv'); 
+        testing_input_filename = strcat(subjects{i}, short, 'testingINPUT_', int2str(j), '.csv'); 
+        testing_target_filename = strcat(subjects{i}, short, 'testingTARGET_', int2str(j), '.csv'); 
+        validation_input_filename = strcat(subjects{i}, short, 'validationINPUT_', int2str(j), '.csv'); 
+        validation_target_filename = strcat(subjects{i}, short, 'validationTARGET_', int2str(j), '.csv'); 
         
         writetable(array2table(current_training_input_set), training_input_filename); 
         writetable(array2table(current_training_target_set), training_target_filename); 
@@ -192,15 +194,17 @@ for i = 1:length(subjects)
 end
 
 %% Construct data set 4: concatenate cross-training sets by subject
+clc;
+clear; 
 subjects = {'sonya', 'annie', 'fahed', 'hamid', 'julian', 'nastaran', 'norfizah', 'paja', 'rachel', 'sarah'}; 
 long = '_long_';
-long = '_long_';
+short = '_short_';
 for i = 1:length(subjects)
     all_input_csv = []; 
     all_target_csv = []; 
-    for j = 1:5
-       training_input_file_names{j} = strcat(subjects{i}, long, 'validationINPUT_', int2str(j), '.csv');
-       training_target_file_names{j} = strcat(subjects{i}, long, 'validationTARGET_', int2str(j), '.csv');
+    for j = 1:22
+       training_input_file_names{j} = strcat(subjects{i}, short, 'validationINPUT_', int2str(j), '.csv');
+       training_target_file_names{j} = strcat(subjects{i}, short, 'validationTARGET_', int2str(j), '.csv');
 %        training_input_file_names(j) = strcat(subjects{j}, long, 'validaINPUT_', int2str(j), '.csv');
        input_var_names{j} = strcat('testing_input_csv_', int2str(j)); 
        target_var_names{j} = strcat('testing_target_csv_', int2str(j)); 
@@ -209,8 +213,8 @@ for i = 1:length(subjects)
        all_input_csv =  [all_input_csv; eval(input_var_names{j})];
        all_target_csv = [all_target_csv; eval(target_var_names{j})];
     end
-    training_input_dataset_name = strcat(subjects{i}, long, 'double_validation_input_data.csv'); 
-    training_target_dataset_name = strcat(subjects{i}, long, 'double_validation_target_data.csv'); 
+    training_input_dataset_name = strcat(subjects{i}, short, 'double_validation_input_data.csv'); 
+    training_target_dataset_name = strcat(subjects{i}, short, 'double_validation_target_data.csv'); 
     writetable(array2table(all_input_csv), training_input_dataset_name);
     writetable(array2table(all_target_csv), training_target_dataset_name);
 
@@ -234,8 +238,8 @@ validation = 'double_validation_';
 inputtag = 'input_data.csv';
 targettag = 'target_data.csv'; 
 for i = 1:length(subjects)
-    inFileName = strcat(subjects{i}, long, training, inputtag);
-    targFileName = strcat(subjects{i}, long, training, targettag);
+    inFileName = strcat(subjects{i}, short, validation, inputtag);
+    targFileName = strcat(subjects{i}, short, validation, targettag);
     in = csvread(inFileName, 1, 0);
     targ = csvread(targFileName, 1, 0);
     incolumn = in(:,1);
