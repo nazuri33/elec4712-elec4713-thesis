@@ -18,8 +18,8 @@ for i = 1:length(subjects)
 end
 
 %% Construct data 1: index matrix for baseline (input) -> response (target) mapping
-single_short = [0.7, 0.2]; % i.e. 700ms traverse time, 2 up-and-down brush sweeps
-double_short = [0.1, 0.2]; % i.e. 100ms, 2 up-and-down sweeps
+single_short = [0.7, 0.02]; % i.e. 700ms traverse time, 2 up-and-down brush sweeps
+double_short = [0.1, 0.02]; % i.e. 100ms, 2 up-and-down sweeps
 single_long = [0.7, 0.10]; % i.e. 700ms, 10 up-and-down sweeps
 double_long = [0.1, 0.10]; % i.e. 100ms, 10 up-and-down sweeps
 % We want every possible combination of inputs to targets.
@@ -199,22 +199,57 @@ for i = 1:length(subjects)
     all_input_csv = []; 
     all_target_csv = []; 
     for j = 1:5
-       training_input_file_names{j} = strcat(subjects{i}, long, 'trainingINPUT_', int2str(j), '.csv');
-       training_target_file_names{j} = strcat(subjects{i}, long, 'trainingTARGET_', int2str(j), '.csv');
+       training_input_file_names{j} = strcat(subjects{i}, long, 'validationINPUT_', int2str(j), '.csv');
+       training_target_file_names{j} = strcat(subjects{i}, long, 'validationTARGET_', int2str(j), '.csv');
 %        training_input_file_names(j) = strcat(subjects{j}, long, 'validaINPUT_', int2str(j), '.csv');
-       input_var_names{j} = strcat('training_input_csv_', int2str(j)); 
-       target_var_names{j} = strcat('training_target_csv_', int2str(j)); 
+       input_var_names{j} = strcat('testing_input_csv_', int2str(j)); 
+       target_var_names{j} = strcat('testing_target_csv_', int2str(j)); 
        eval([input_var_names{j}, ' = csvread(training_input_file_names{j},1,0);']); 
        eval([target_var_names{j}, ' = csvread(training_target_file_names{j},1,0);']); 
        all_input_csv =  [all_input_csv; eval(input_var_names{j})];
        all_target_csv = [all_target_csv; eval(target_var_names{j})];
     end
-    training_input_dataset_name = strcat(subjects{i}, long, 'double_training_input_data.csv'); 
-    training_target_dataset_name = strcat(subjects{i}, long, 'double_training_target_data.csv'); 
+    training_input_dataset_name = strcat(subjects{i}, long, 'double_validation_input_data.csv'); 
+    training_target_dataset_name = strcat(subjects{i}, long, 'double_validation_target_data.csv'); 
     writetable(array2table(all_input_csv), training_input_dataset_name);
     writetable(array2table(all_target_csv), training_target_dataset_name);
 
 end 
 
-
+%% Normalise final dataset (0 to 1)
+clear;
+clc;
+normCol = @(column) (column - min(column))/(max(column) - min(column));
+roundN = @(x,n) round(x*10^n)./10^n; 
+single_short = [0.7, 0.02]; % i.e. 700ms traverse time, 2 up-and-down brush sweeps
+double_short = [0.1, 0.02]; % i.e. 100ms, 2 up-and-down sweeps
+single_long = [0.7, 0.10]; % i.e. 700ms, 10 up-and-down sweeps
+double_long = [0.1, 0.10]; % i.e. 100ms, 10 up-and-down sweeps
+subjects = {'sonya', 'annie', 'fahed', 'hamid', 'julian', 'nastaran', 'norfizah', 'paja', 'rachel', 'sarah'}; 
+long = '_long_';
+short = '_short_';
+training = 'double_training_';
+testing = 'double_testing_';
+validation = 'double_validation_';
+inputtag = 'input_data.csv';
+targettag = 'target_data.csv'; 
+for i = 1:length(subjects)
+    inFileName = strcat(subjects{i}, long, training, inputtag);
+    targFileName = strcat(subjects{i}, long, training, targettag);
+    in = csvread(inFileName, 1, 0);
+    targ = csvread(targFileName, 1, 0);
+    incolumn = in(:,1);
+    targcolumn = targ(:,1); 
+    incolnorm = normCol(incolumn); 
+    targcolnorm = normCol(targcolumn); 
+    for j = 1:size(incolumn,1)
+        inOut(j,2:3) = double_long; 
+        inOut(j,1) = incolnorm(j);
+        targOut(j,1) = targcolnorm(j);  
+    end
+    roundedInTable = array2table(roundN(inOut,3)); 
+    roundedTargTable = array2table(roundN(targOut,3)); 
+    writetable(roundedInTable, strcat('norm_', inFileName));
+    writetable(roundedTargTable, strcat('norm_', targFileName)); 
+end 
 

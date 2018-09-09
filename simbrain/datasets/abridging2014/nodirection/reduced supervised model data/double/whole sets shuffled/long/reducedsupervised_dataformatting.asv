@@ -191,28 +191,48 @@ for i = 1:length(subjects)
     end
 end
 
-%% Construct data set 4: concatenate cross-testing sets by subject
+%% Construct data set 4: concatenate cross-training sets by subject
 subjects = {'sonya', 'annie', 'fahed', 'hamid', 'julian', 'nastaran', 'norfizah', 'paja', 'rachel', 'sarah'}; 
-short = '_short_';
+long = '_long_';
 long = '_long_';
 for i = 1:length(subjects)
     all_input_csv = []; 
     all_target_csv = []; 
-    for j = 1:22
-       testing_input_file_names{j} = strcat(subjects{i}, short, 'testingINPUT_', int2str(j), '.csv');
-       testing_target_file_names{j} = strcat(subjects{i}, short, 'testingTARGET_', int2str(j), '.csv');
-%        testing_input_file_names(j) = strcat(subjects{j}, short, 'validaINPUT_', int2str(j), '.csv');
-       input_var_names{j} = strcat('testing_input_csv_', int2str(j)); 
-       target_var_names{j} = strcat('testing_target_csv_', int2str(j)); 
-       eval([input_var_names{j}, ' = csvread(testing_input_file_names{j},1,0);']); 
-       eval([target_var_names{j}, ' = csvread(testing_target_file_names{j},1,0);']); 
+    for j = 1:5
+       training_input_file_names{j} = strcat(subjects{i}, long, 'trainingINPUT_', int2str(j), '.csv');
+       training_target_file_names{j} = strcat(subjects{i}, long, 'trainingTARGET_', int2str(j), '.csv');
+%        training_input_file_names(j) = strcat(subjects{j}, long, 'validaINPUT_', int2str(j), '.csv');
+       input_var_names{j} = strcat('training_input_csv_', int2str(j)); 
+       target_var_names{j} = strcat('training_target_csv_', int2str(j)); 
+       eval([input_var_names{j}, ' = csvread(training_input_file_names{j},1,0);']); 
+       eval([target_var_names{j}, ' = csvread(training_target_file_names{j},1,0);']); 
        all_input_csv =  [all_input_csv; eval(input_var_names{j})];
        all_target_csv = [all_target_csv; eval(target_var_names{j})];
     end
-    testing_input_dataset_name = strcat(subjects{i}, short, 'double_testing_input_data.csv'); 
-    testing_target_dataset_name = strcat(subjects{i}, short, 'double_testing_target_data.csv'); 
-    writetable(array2table(all_input_csv), testing_input_dataset_name);
-    writetable(array2table(all_target_csv), testing_target_dataset_name);
+    training_input_dataset_name = strcat(subjects{i}, long, 'double_training_input_data.csv'); 
+    training_target_dataset_name = strcat(subjects{i}, long, 'double_training_target_data.csv'); 
+    writetable(array2table(all_input_csv), training_input_dataset_name);
+    writetable(array2table(all_target_csv), training_target_dataset_name);
 
+end 
+
+%% Normalise final dataset (0 to 1)
+normCol = @(column) (column - min(column))/(max(column) - min(column));
+subjects = {'sonya', 'annie', 'fahed', 'hamid', 'julian', 'nastaran', 'norfizah', 'paja', 'rachel', 'sarah'}; 
+long = '_long_';
+short = '_short_';
+training = 'double_training_';
+testing = 'double_testing_';
+validation = 'double_validation_';
+inputtag = 'input_data.csv';
+targettag = 'target_data.csv'; 
+for i = 1:length(subjects)
+    in = csvread(strcat(subjects{i}, long, training, inputtag), 1, 0);
+    targ = csvread(strcat(subjects{i}, long, training, targettag), 1, 0);
+    incolumn = in(:,1);
+    targcolumn = targ(:,1); 
+    incolnorm = normCol(incolumn); 
+    targcolnorm = normCol(targcolumn); 
+    
 end 
 
