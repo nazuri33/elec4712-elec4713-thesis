@@ -1,10 +1,10 @@
 %% Save tables as csvs (Note: before running this script, need to open all subjects *_byresponse.mat' files)
-directory = 'E:\checkout\elec4712-elec4713-thesis\simbrain\datasets\abridging2014\nodirection\reduced supervised model data\double\by subjects and responses\longs';
+directory = 'D:\checkout\elec4712-elec4713-thesis\simbrain\datasets\abridging2014\nodirection\reduced supervised model data\single\by subjects and responses\shorts';
 subjects = {'sonya', 'annie', 'fahed', 'hamid', 'julian', 'nastaran', 'norfizah', 'paja', 'rachel', 'sarah'};
 
 for i = 1:length(subjects)
     varnames = who(strcat('*_', subjects{i}));
-    for j = 1:12
+    for j = 1:6
         file_name = strcat(varnames(j), '.csv');
 %       file_dir = [directory filesep file_name];
         current_table = table2array(varnames(j));
@@ -223,25 +223,27 @@ clc;
 subjects = {'sonya', 'annie', 'fahed', 'hamid', 'julian', 'nastaran', 'norfizah', 'paja', 'rachel', 'sarah'};
 short = '_shortsALL_';
 long = '_longsALL_';
-directory = 'D:\checkout\elec4712-elec4713-thesis\simbrain\datasets\abridging2014\nodirection\reduced supervised model data\double\by subject and response';
-savedirectory = 'D:\checkout\elec4712-elec4713-thesis\simbrain\datasets\abridging2014\nodirection\reduced supervised model data\double\ordered data';
+target_directory = 'D:\checkout\elec4712-elec4713-thesis\simbrain\datasets\abridging2014\nodirection\reduced supervised model data\double\by subject and response\shorts';
+shorts_directory = 'D:\checkout\elec4712-elec4713-thesis\simbrain\datasets\abridging2014\nodirection\reduced supervised model data\single\by subject and response\shorts';
+longs_directory = 'D:\checkout\elec4712-elec4713-thesis\simbrain\datasets\abridging2014\nodirection\reduced supervised model data\single\by subject and response\longs';
+savedirectory = 'D:\checkout\elec4712-elec4713-thesis\simbrain\datasets\abridging2014\nodirection\reduced supervised model data\single\ordered data';
 
 for i = 1:length(subjects)
     ordered_input = [];
     ordered_target = [];
-%     single_short = [0.7, 0.02]; % i.e. 700ms traverse time, 2 up-and-down brush sweeps
-    double_short = [0.1, 0.02]; % i.e. 100ms, 2 up-and-down sweeps
-%     single_long = [0.7, 0.10]; % i.e. 700ms, 10 up-and-down sweeps
-    double_long = [0.1, 0.10]; % i.e. 100ms, 10 up-and-down sweeps
+    single_short = [0.7, 0.02]; % i.e. 700ms traverse time, 2 up-and-down brush sweeps
+%     double_short = [0.1, 0.02]; % i.e. 100ms, 2 up-and-down sweeps
+    single_long = [0.7, 0.10]; % i.e. 700ms, 10 up-and-down sweeps
+%     double_long = [0.1, 0.10]; % i.e. 100ms, 10 up-and-down sweeps
 %     inputcsvname_short = strcat(subjects{i}, short, 'inputdataset.csv');
 %     inputcsvname_long = strcat(subjects{i}, short, 'targetdataset.csv');
 %     input_short = csvread(inputcsvname_short,1,0);
 %     target_short = csvread(targetcsvname_short,1,0);
     idx = 1;
     for j = 1:6
-        inputcsvname_short = [directory filesep 'shorts' filesep strcat('response', int2str(j), short, subjects{i}, '.csv')];
-        inputcsvname_long = [directory filesep 'longs' filesep strcat('response', int2str(j), long, subjects{i}, '.csv')];
-        targetcsvname = [directory filesep 'shorts' filesep strcat('base', int2str(j), '_shorts_noCfitted_', subjects{i}, '.csv')];
+        inputcsvname_short = [shorts_directory filesep strcat('single_response', int2str(j), short, subjects{i}, '.csv')];
+        inputcsvname_long = [longs_directory filesep strcat('single_response', int2str(j), long, subjects{i}, '.csv')];
+        targetcsvname = [target_directory filesep strcat('base', int2str(j), '_shorts_noCfitted_', subjects{i}, '.csv')];
         current_short_response = csvread(inputcsvname_short,1,0);
         current_long_response = csvread(inputcsvname_long,1,0);
         current_targets = csvread(targetcsvname,1,0);
@@ -257,7 +259,7 @@ for i = 1:length(subjects)
         ordered_targets(idx+48:idx+51,1) = current_targets(3, short_2_response_ordering(1:4));
         
         for x = idx:idx+51
-            ordered_input(x, 2:3) = double_short(1,:); 
+            ordered_input(x, 2:3) = single_short(1,:); 
         end 
         
         ordered_input(idx+72:idx+75,1) = current_long_response(1, long_1_response_ordering(1:4));
@@ -267,21 +269,21 @@ for i = 1:length(subjects)
         ordered_targets(idx+96:idx+99,1) = current_targets(2+target_ordering(1), long_2_response_ordering(1:4));
         
         for y = idx+72:idx+99
-            ordered_input(y,2:3) = double_long(1,:); 
+            ordered_input(y,2:3) = single_long(1,:); 
         end 
         
         ordered_input(idx+120:idx+123,1) = current_short_response(4, short_3_response_ordering(1:4));
         ordered_targets(idx+120:idx+123,1) = current_targets(2+target_ordering(1), long_2_response_ordering(1:4));
         
         for z = idx+120:idx+123
-            ordered_input(z,2:3) = double_short(1,:); 
+            ordered_input(z,2:3) = single_short(1,:); 
         end 
         
         idx = idx + 4;
     end
 
-    saved_inputs_name = [savedirectory filesep strcat(subjects{i}, '_double_ordered_INPUT_data.csv')];
-    saved_targets_name = [savedirectory filesep strcat(subjects{i}, '_double_ordered_TARGET_data.csv')];
+    saved_inputs_name = [savedirectory filesep strcat(subjects{i}, '_single_ordered_INPUT_data.csv')];
+    saved_targets_name = [savedirectory filesep strcat(subjects{i}, '_single_ordered_TARGET_data.csv')];
     writetable(array2table(ordered_input), saved_inputs_name);
     writetable(array2table(ordered_targets), saved_targets_name);
 
