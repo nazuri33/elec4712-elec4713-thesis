@@ -288,3 +288,5 @@ for i = 1:length(subjects)
     writetable(array2table(ordered_targets), saved_targets_name);
 
 end
+
+%% Compression data (figure 4B, 2014) pre-processing
