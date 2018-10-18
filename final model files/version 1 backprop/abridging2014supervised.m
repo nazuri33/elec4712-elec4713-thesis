@@ -25,7 +25,7 @@ optimVars = [
     % optimizableVariable('TrainingFunction', {'traingd', 'traingdm', 'traingdx', 'trainrp', 'trainbr'}, 'Type', 'categorical') % test 1: ['traingd', 'traingdm', 'traingdx', 'trainrp', 'trainbr'], test 2: ['traingd', 'traingdm', 'trainbr'], test 3: just traingdm (comment out and set in objective function)
     % optimizableVariable('LossFunction', {'mse', 'sse', 'crossentropy'}, 'Type', 'categorical')]; % test 1: [mse, sse, crossentropy], test 2: sse, test 3: mse
 optimResult = ffObjFcn(X, Y); 
-BayesObjectTest2 = bayesopt(optimResult, optimVars, ...
+BayesObjectTesticles = bayesopt(optimResult, optimVars, ...
     'MaxObj', 1000, ...
     'IsObjectiveDeterministic', false, ...
     'PlotFcn', {@plotMinObjective, @plotElapsedTime}); 
@@ -101,6 +101,7 @@ optimResult = @valErrorFun;
 %         perf = perform(net,y,X')
 %         disp(tr)
         valError = tr.best_vperf;
+        disp(tr)
         fileName = num2str(valError) + ".mat";
         dirFile = 'D:\checkout\elec4712-elec4713-thesis\final model files\version 1 backprop\matlab\backpropOptim\test3\' + fileName; 
         save(dirFile, 'trainedNet', 'valError', 'net'); 
