@@ -69,7 +69,8 @@ def grid(n, xmin=0.0, xmax=1.0, ymin=0.0, ymax=1.0, noise=0.0):
     X = torch.remainder(X+1, 1)
     Y += torch.DoubleTensor(n,n).uniform_(-noise, noise).to(device)
     Y = torch.remainder(Y+1, 1)
-    return X.view(-1), Y.view(-1) # VERY UNSURE about this; lots of people online advising that .view(-1) is not the same as np.ravel
+    # return X.view(-1), Y.view(-1) # VERY UNSURE about this; lots of people online advising that .view(-1) is not the same as np.ravel
+    return X.view(X.numel()), Y.view(Y.numel())
 
 
 def g(x, sigma=1.0):
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     lrate = 0.03    # 0.005 Learning rate
     alpha = 0.1     # Time constant
     tau = 1.00      # Synapse temporal decay
-    epochs = 35000  # Number of training epochs
+    epochs = 1000 # Number of training epochs
 
     W_min, W_max = 0.00, 1.00     # Weights min/max values for initialization
     Ke = 960.0/(n*n) * 3.72  # Strength of lateral excitatory weights
@@ -129,30 +130,30 @@ if __name__ == '__main__':
     # --------------------------------------------
 #    U = np.random.uniform(0.00, 0.01, (n, n))
 #    V = np.random.uniform(0.00, 0.01, (n, n))
-    U = torch.FloatTensor(n,n).uniform_(0.00, 0.01).to(device)
-    V = torch.FloatTensor(n, n).uniform_(0.00, 0.01).to(device)
+    Utorch = torch.FloatTensor(n,n).uniform_(0.00, 0.01).to(device)
+    Vtorch = torch.FloatTensor(n, n).uniform_(0.00, 0.01).to(device)
 
 #    W = np.random.uniform(W_min, W_max, (n*n, Rn*Rn))
-    W = torch.FloatTensor(n*n, Rn*Rn).uniform_(W_min, W_max).to(device)  # random initialisation of weight matrix
+    Wtorch = torch.FloatTensor(n*n, Rn*Rn).uniform_(W_min, W_max).to(device)  # random initialisation of weight matrix
 
     # FFT implementation
     # --------------------------------------------
     mean = 0.5
     x_inf, x_sup, y_inf, y_sup = 0.0, 1.0, 0.0, 1.0
-    x_lin = torch.linspace(x_inf, x_sup, n+1)[1:]
-    y_lin = torch.linspace(y_inf, y_sup, n+1)[1:]
-    X, Y = torch.from_numpy(np.asarray(np.meshgrid(x_lin, y_lin))).to(device)
-    Dist = torch.sqrt((X-mean)**2 + (Y-mean)**2)
-    We = Ke * g(Dist, sigma_e) * alpha
-    Wi = Ki * g(Dist, sigma_i) * alpha
+    x_lin_torch = torch.linspace(x_inf, x_sup, n+1)[1:]
+    y_lin_torch = torch.linspace(y_inf, y_sup, n+1)[1:]
+    Xtorch, Ytorch = torch.from_numpy(np.asarray(np.meshgrid(x_lin_torch, y_lin_torch))).to(device)
+    Dist = torch.sqrt((Xtorch-mean)**2 + (Ytorch-mean)**2)
+    We_torch = Ke * g(Dist, sigma_e) * alpha
+    Wi_torch = Ki * g(Dist, sigma_i) * alpha
 
 #    We_fft = rfft2(ifftshift(We[::-1, ::-1])) # rfft2: numpy function to compute 2D FFT of real array
 #    Wi_fft = rfft2(ifftshift(Wi[::-1, ::-1]))
     
     
     # NEED TO SHIFT SOMEHOW
-    We_fft_torch = torch.rfft(torch.flip(torch.flip(We, [0]), [1]), 2)
-    Wi_fft_torch = torch.rfft(torch.flip(torch.flip(Wi, [0]), [1]), 2)
+    We_fft_torch = torch.rfft(torch.flip(torch.flip(We_torch, [0]), [1]), 2)
+    Wi_fft_torch = torch.rfft(torch.flip(torch.flip(Wi_torch, [0]), [1]), 2)
 
     # Skin Receptors setup
     # --------------------------------------------
@@ -166,46 +167,46 @@ if __name__ == '__main__':
     # Samples generation
     # --------------------------------------------
     size = epochs
-    S = torch.FloatTensor(size, 2).uniform_(0, 1).to(device)
-    dX = torch.FloatTensor.abs_(torch.reshape(Rtorch[:, 0], (1, Rn*Rn)).to(device) - torch.reshape(S[:, 0], (size, 1)).to(device))
-    dX = torch.min(dX, 1-dX)
-    dY = torch.FloatTensor.abs_(torch.reshape(Rtorch[:, 1], (1, Rn*Rn)).to(device) - torch.reshape(S[:, 1], (size, 1)).to(device))
-    dY = torch.min(dY, 1-dY)
-    samples = torch.sqrt_(dX*dX + dY*dY)/mt.sqrt(2.0)
-    samples = g(samples, 0.08)
+    Storch = torch.FloatTensor(size, 2).uniform_(0, 1).to(device)
+    dXtorch = torch.FloatTensor.abs_(torch.reshape(Rtorch[:, 0], (1, Rn*Rn)).to(device) - torch.reshape(Storch[:, 0], (size, 1)).to(device))
+    dXtorch = torch.min(dXtorch, 1-dXtorch)
+    dYtorch = torch.FloatTensor.abs_(torch.reshape(Rtorch[:, 1], (1, Rn*Rn)).to(device) - torch.reshape(Storch[:, 1], (size, 1)).to(device))
+    dYtorch = torch.min(dYtorch, 1-dYtorch)
+    samples_torch = torch.sqrt_(dXtorch*dXtorch + dYtorch*dYtorch)/mt.sqrt(2.0)
+    samples_torch = g(samples_torch, 0.08)
 
     # Actual training
     # --------------------------------------------
 #    plt.ion()
     for e in range(epochs):
         # Pick a sample
-        stimulus = samples[e]
+        stimulus_torch = samples_torch[e]
 
         # Computes field input accordingly
 #        D = ((np.abs(W - stimulus)).sum(axis=-1))/float(Rn*Rn)
 #        I = (1.0 - D.reshape(n, n)) * alpha
-        D = torch.sum((torch.FloatTensor.abs_(W - stimulus)), 1)/float(Rn*Rn)
-        I = (1.0 - torch.reshape(D, (n,n))) * alpha
+        Dtorch = torch.sum((torch.FloatTensor.abs_(Wtorch - stimulus_torch)), 1)/float(Rn*Rn)
+        Itorch = (1.0 - torch.reshape(Dtorch, (n,n))) * alpha
         
         # Field simulation until convergence
         for l in range(int(T/dt)):
 #            V = np.maximum(U, 0.0)
-            V = torch.max(U, n_zeros.to(device))
+            Vtorch = torch.max(Utorch, n_zeros.to(device))
 #            Z = rfft2(V)
-            Z = torch.rfft(V, 2)
+            Ztorch = torch.rfft(Vtorch, 2)
 #            Le = irfft2(Z * We_fft, (n, n))
 #            Li = irfft2(Z * Wi_fft, (n, n))
             
-            LeTorch = torch.irfft(Z * We_fft_torch, 2)
-            LiTorch = torch.irfft(Z * Wi_fft_torch, 2)
+            LeTorch = torch.irfft(Ztorch * We_fft_torch, 2, signal_sizes=Vtorch.shape)
+            LiTorch = torch.irfft(Ztorch * Wi_fft_torch, 2, signal_sizes=Vtorch.shape)
             
-            U += (-U + (LeTorch - LiTorch) + I) / tau * dt
+            Utorch += (-Utorch + (LeTorch - LiTorch) + Itorch) / tau * dt
 
         # plot_activity(V)
 
         # Learning
         # --------
-        W -= lrate * (Le.ravel() * (W - stimulus).T).T
+        Wtorch -= lrate * torch.t((LeTorch.view(LeTorch.numel()) * torch.t(Wtorch - stimulus_torch)))
 
         if e % 50 == 0:
             print(e)
@@ -214,20 +215,21 @@ if __name__ == '__main__':
         # --------------------
 #        U = np.random.uniform(0.00, 0.01, (n, n))
 #        V = np.random.uniform(0.00, 0.01, (n, n))
-        U = torch.FloatTensor(n,n).uniform_(0.00, 0.01).to(device)
-        V = torch.FloatTensor(n,n).uniform_(0.00, 0.01).to(device)
+        Utorch = torch.FloatTensor(n,n).uniform_(0.00, 0.01).to(device)
+        Vtorch = torch.FloatTensor(n,n).uniform_(0.00, 0.01).to(device)
 
-    torch.save(W, 'torch_weights.pt')
-    np.save('weights', W)
+    torch.save(Wtorch, 'torch_weights.pt')
+#    np.save('weights', Wtorch)
 
     m = Rn
     plt.figure(figsize=(10, 10))
     ax = plt.subplot(111, aspect=1)
-    R = np.zeros((n*m, n*m))
+#    R = np.zeros((n*m, n*m))
+    Rtorch = torch.zeros([n*m, n*n])
     for j in range(n):
         for i in range(n):
-            R[j*m:(j+1)*m, i*m:(i+1)*m] = W[j*n+i].reshape(m, m)
-    im = plt.imshow(R, interpolation='nearest', cmap=plt.cm.bone_r,
+            Rtorch[j*m:(j+1)*m, i*m:(i+1)*m] = torch.reshape(Wtorch[j*n+i], (m,m))
+    im = plt.imshow(Rtorch, interpolation='nearest', cmap=plt.cm.bone_r,
                     vmin=0, vmax=1)
     plt.xticks(np.arange(0, n*m, m), [])
     plt.yticks(np.arange(0, n*m, m), [])
