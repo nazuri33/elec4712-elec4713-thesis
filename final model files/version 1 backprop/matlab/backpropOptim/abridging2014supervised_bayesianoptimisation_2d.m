@@ -4,7 +4,7 @@ clc
 rng('default');
 
 
-directory = 'D:\checkout\elec4712-elec4713-thesis\final model files\version 1 backprop\data\abridging2014\nodirection\compression data';
+directory = 'E:\checkout\elec4712-elec4713-thesis\final model files\version 1 backprop\data\abridging2014\nodirection\compression data';
 X = csvread([directory filesep 'Abridging2014CompressionInputs.csv']); % input set
 Y = csvread([directory filesep 'Abridging2014CompressionTargets.csv']); % target set
 Xmean = csvread([directory filesep 'Abridging2014CompressionInputsMeans.csv']); % input set (means)
@@ -54,11 +54,11 @@ optimResultTest5 = @valErrorFun5;
         net5.trainparam.mc = 0.9;
         [trainedNet5, tr5] = train(net5, X5', Y5', 'useGPU', 'yes'); % NOTE: by default, feedforwardnets partition data 0.7:0.15:0.15 according to dividerand function
 
-        valError5 = tr5.best_vperf; 
+        valError5 = tr5.best_perf; 
         
 
-        fileName5 = num2str(valError5) + "_5_iter" + iter5 + ".mat";
-        dirFile5 = 'D:\checkout\elec4712-elec4713-thesis\final model files\version 1 backprop\matlab\backpropOptim\test5\trainedNets\' + fileName5; 
+        fileName5 = num2str(valError5) + "_5b_iter" + iter5 + ".mat";
+        dirFile5 = 'E:\checkout\elec4712-elec4713-thesis\final model files\version 1 backprop\matlab\backpropOptim\test5\5b\trainedNets\' + fileName5; 
         save(dirFile5, 'trainedNet5', 'valError5', 'net5'); 
         cons5 = []; 
     end
@@ -77,11 +77,11 @@ optimResultTest6 = @valErrorFun6;
         net6.trainparam.mc = optVars6.Momentum; 
         [trainedNet6, tr6] = train(net6, X6', Y6', 'useGPU', 'yes'); % NOTE: by default, feedforwardnets partition data 0.7:0.15:0.15 according to dividerand function
 
-        valError6 = tr6.best_vperf; 
+        valError6 = tr6.best_perf; 
         
 
-        fileName6 = num2str(valError6) + "_6_iter" + iter6 + ".mat";
-        dirFile6 = 'D:\checkout\elec4712-elec4713-thesis\final model files\version 1 backprop\matlab\backpropOptim\test6\trainedNets\' + fileName6; 
+        fileName6 = num2str(valError6) + "_6b_iter" + iter6 + ".mat";
+        dirFile6 = 'E:\checkout\elec4712-elec4713-thesis\final model files\version 1 backprop\matlab\backpropOptim\test6\6b\trainedNets\' + fileName6; 
         save(dirFile6, 'trainedNet6', 'valError6', 'net6'); 
         cons6 = []; 
 

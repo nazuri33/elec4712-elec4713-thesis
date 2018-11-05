@@ -417,4 +417,17 @@ import java.text.NumberFormat;
     internalFrame.pack();
     desktop.addInternalFrame(internalFrame);
 
+    /***************************************
+    **** SCRAMBLING ************************
+    ***************************************/
+    int numTargets = 6;
+    int targetSize = 50; // square
+    int movementFactor = 1; // stimulus moves in discrete steps of one target at a time; since motion is continuous in experiment, this is not realistic
+    int startLocation = (targetSize * numTargets) - targetSize / 2;
+    boolean stop = false;
+    OdorWorld scramblingWorld;
+    OdorWorldBuilder scramblingOb;
+    RotatingEntity stimulus;
+
+  workspace.addWorkspaceComponent(new OdorWorldComponent("Scrambling stimulus")); 
 }
